@@ -1,4 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function Home() {
+	const [isDark, setIsDark] = useState(false);
+
 	const navItems = [
 		{ label: "Features", href: "#features" },
 		{ label: "Science", href: "#science" },
@@ -48,9 +54,23 @@ export default function Home() {
 		{ tier: "Institutional", description: "For schools, colleges, and coaching centers" },
 	];
 
+	useEffect(() => {
+		const root = document.documentElement;
+		setIsDark(root.classList.contains("dark"));
+	}, []);
+
+	useEffect(() => {
+		const root = document.documentElement;
+		if (isDark) {
+			root.classList.add("dark");
+		} else {
+			root.classList.remove("dark");
+		}
+	}, [isDark]);
+
 	return (
 		<div className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
-			<header className="border-b border-[var(--color-border)] bg-[var(--color-page-bg)]">
+			<header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-page-bg)]">
 				<div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6">
 					<div className="text-lg font-semibold tracking-tight text-[var(--color-text-primary)]">MindOS</div>
 					<nav className="flex flex-wrap items-center gap-4 text-sm font-medium text-[var(--color-text-strong)]">
@@ -59,6 +79,14 @@ export default function Home() {
 								{item.label}
 							</a>
 						))}
+						<button
+							type="button"
+							onClick={() => setIsDark((prev) => !prev)}
+							aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+							className="inline-flex items-center justify-center bg-[var(--color-page-bg)] px-3 py-1 text-sm font-semibold text-[var(--color-button-secondary-text)] ring-1 ring-[var(--color-ring)] transition-colors hover:bg-[var(--color-button-secondary-hover)]"
+						>
+							{isDark ? "Light Mode" : "Dark Mode"}
+						</button>
 						<a
 							href="#cta"
 							className="inline-flex items-center justify-center bg-[var(--color-page-bg)] px-3 py-1 text-sm font-semibold text-[var(--color-button-secondary-text)] ring-1 ring-[var(--color-ring)] transition-colors hover:bg-[var(--color-button-secondary-hover)]"
