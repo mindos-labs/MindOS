@@ -18,6 +18,9 @@ import { FaBrain, FaBolt, FaLock, FaArrowRight, FaGithub } from "react-icons/fa"
 import { LuCheck } from "react-icons/lu"
 import { useUser, UserButton } from "@stackframe/stack"
 import Link from "next/link"
+import TechniquesShowcase from "@/components/landing-new/TechniquesShowcase"
+import HowItWorksSection from "@/components/landing-new/HowItWorksSection"
+import StatsSection from "@/components/landing-new/StatsSection"
 
 export default function Home() {
 	const user = useUser();
@@ -84,8 +87,10 @@ export default function Home() {
 								Start Learning Free <Icon as={FaArrowRight} />
 							</Link>
 						</Button>
-						<Button size="xl" variant="outline">
-							<Icon as={FaGithub} /> Star on GitHub
+						<Button size="xl" variant="outline" asChild>
+							<Link href="https://github.com/mindos-labs/MindOS" target="_blank">
+								<Icon as={FaGithub} /> Star on GitHub
+							</Link>
 						</Button>
 					</Stack>
 
@@ -134,6 +139,15 @@ export default function Home() {
 				</Container>
 			</Box>
 
+			{/* Techniques Showcase */}
+			<TechniquesShowcase />
+
+			{/* How It Works */}
+			<HowItWorksSection />
+
+			{/* Stats Section */}
+			<StatsSection />
+
 			{/* CTA Section */}
 			<Container maxW="container.lg" py={24}>
 				<Box
@@ -165,9 +179,15 @@ export default function Home() {
 							&copy; {new Date().getFullYear()} Mindos. All rights reserved.
 						</Text>
 						<HStack gap={6}>
-							<Button variant="plain" size="sm" color="fg.muted">Privacy</Button>
-							<Button variant="plain" size="sm" color="fg.muted">Terms</Button>
-							<Button variant="plain" size="sm" color="fg.muted">Twitter</Button>
+							<Button variant="plain" size="sm" color="fg.muted" asChild>
+								<Link href="https://github.com/mindos-labs" target="_blank">GitHub</Link>
+							</Button>
+							<Button variant="plain" size="sm" color="fg.muted" asChild>
+								<Link href="https://github.com/mindos-labs/MindOS" target="_blank">Repository</Link>
+							</Button>
+							<Button variant="plain" size="sm" color="fg.muted" asChild>
+								<Link href="https://mindos.strivio.world" target="_blank">Website</Link>
+							</Button>
 						</HStack>
 					</Flex>
 				</Container>

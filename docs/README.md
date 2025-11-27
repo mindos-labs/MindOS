@@ -386,9 +386,7 @@ MindOS is the **ultimate Scientific Learning OS** that converts all proven memor
 
 ---
 
-# 🔗 Links
+# Links
 
-- **Website**: [https://mindos.strivio.world](https://mindos.strivio.world)
-- **GitHub Organization**: [https://github.com/mindos-labs](https://github.com/mindos-labs)
-- **Main Repository**: [https://github.com/mindos-labs/MindOS](https://github.com/mindos-labs/MindOS)
-- **Legacy Repository**: [https://github.com/SH20RAJ/MindOS](https://github.com/SH20RAJ/MindOS)
+- Website: https://mindos.strivio.world
+- GitHub: https://github.com/SH20RAJ/MindOS
