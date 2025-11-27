@@ -6,7 +6,7 @@ export function SocialProof() {
 	];
 
 	return (
-		<section className="border-y bg-secondary/30 py-12">
+	<section className="border-y bg-secondary/30 py-12">
 			<div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 				<p className="mb-6 text-center text-sm font-medium text-muted-foreground">
 					Trusted by learners from

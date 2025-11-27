@@ -1,0 +1,423 @@
+// MindOS Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // User Preferences
+  timezone           String?
+  studyReminders     Boolean  @default(true)
+  calendarSyncEnabled Boolean @default(false)
+  preferredTheme     String   @default("light")
+
+  // Relations
+  projects       Project[]
+  chatSessions   ChatSession[]
+  gamification   Gamification?
+  parentAccess   ParentAccess[]
+  
+  @@map("users")
+}
+
+// ============================================
+// LEARNING PROJECTS
+// ============================================
+
+model Project {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Project Details
+  title              String
+  goal               String?
+  description        String?
+  category           String? // "academic", "skill", "exam-prep", "hobby"
+  
+  // Onboarding Data
+  duration           String? // "1-week", "1-month", "3-months", "semester"
+  rememberDuration   String? // "1-week", "till-exam", "1-month", "forever"
+  level              String? // "beginner", "intermediate", "pro"
+  learningStyle      String? // "visual", "text", "practice-based"
+  studyHoursPerDay   Float?
+  examDate           DateTime?
+  weakAreas          String[] // Array of weak topics
+  
+  // Status
+  status             String   @default("active") // "active", "paused", "completed", "archived"
+  progress           Float    @default(0) // 0-100
+  masteryScore       Float    @default(0) // 0-100
+  
+  // Timestamps
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  completedAt        DateTime?
+  
+  // Relations
+  subtopics      Subtopic[]
+  tasks          Task[]
+  chatSessions   ChatSession[]
+  documents      Document[]
+  quizzes        Quiz[]
+  revisions      Revision[]
+  mindmaps       Mindmap[]
+  
+  @@index([userId, status])
+  @@map("projects")
+}
+
+// ============================================
+// LEARNING CONTENT STRUCTURE
+// ============================================
+
+model Subtopic {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Content
+  title           String
+  description     String?
+  content         String?
+  orderIndex      Int
+  estimatedHours  Float?
+  difficulty      String? // "easy", "medium", "hard"
+  dependencies    String[] // IDs of prerequisite subtopics
+  
+  // Memory Tracking
+  memoryStrength  Float    @default(0) // 0-100 based on SM-2 algorithm
+  lastReviewed    DateTime?
+  nextReview      DateTime?
+  reviewCount     Int      @default(0)
+  
+  // Status
+  isCompleted     Boolean  @default(false)
+  completedAt     DateTime?
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  tasks       Task[]
+  flashcards  Flashcard[]
+  
+  @@index([projectId, orderIndex])
+  @@map("subtopics")
+}
+
+// ============================================
+// TASKS & ACTIVITIES
+// ============================================
+
+model Task {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  subtopicId  String?
+  subtopic    Subtopic? @relation(fields: [subtopicId], references: [id], onDelete: SetNull)
+  
+  // Task Details
+  title           String
+  description     String?
+  type            String // "study", "quiz", "flashcard", "revision", "practice", "mindmap", "elaboration"
+  priority        String   @default("medium") // "low", "medium", "high"
+  
+  // Scheduling
+  dueDate         DateTime?
+  scheduledFor    DateTime?
+  estimatedMinutes Int?
+  
+  // Status
+  completed       Boolean  @default(false)
+  completedAt     DateTime?
+  score           Float? // For quiz/practice tasks
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([projectId, dueDate])
+  @@index([completed, scheduledFor])
+  @@map("tasks")
+}
+
+// ============================================
+// AI CHAT & TUTORING
+// ============================================
+
+model ChatSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  // Session Details
+  title       String?
+  type        String   @default("tutor") // "tutor", "pdf-chat", "general"
+  
+  // Messages stored as JSON
+  messages    Json[] // [{role: "user|assistant", content: string, timestamp: string}]
+  
+  // Context
+  documentIds String[] // Related documents for context
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId, projectId])
+  @@map("chat_sessions")
+}
+
+// ============================================
+// DOCUMENTS & RESOURCES
+// ============================================
+
+model Document {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // File Details
+  title           String
+  type            String // "pdf", "notes", "ppt", "image", "link", "video"
+  fileUrl         String
+  fileName        String?
+  fileSize        Int? // in bytes
+  
+  // Content
+  extractedText   String? // Extracted text content
+  summary         String? // AI-generated summary
+  
+  // Vector Embeddings for Semantic Search
+  vectorEmbedding Json? // Store embeddings as JSON
+  
+  // Processing Status
+  processed       Boolean  @default(false)
+  processingError String?
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([projectId])
+  @@map("documents")
+}
+
+// ============================================
+// NEUROSCIENCE TOOLS
+// ============================================
+
+// Active Recall - Flashcards
+model Flashcard {
+  id          String   @id @default(cuid())
+  subtopicId  String
+  subtopic    Subtopic @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
+  
+  // Card Content
+  front       String
+  back        String
+  hint        String?
+  
+  // Spaced Repetition (SM-2 Algorithm)
+  easeFactor  Float    @default(2.5)
+  interval    Int      @default(1) // days
+  repetitions Int      @default(0)
+  nextReview  DateTime?
+  
+  // Performance
+  correctCount    Int  @default(0)
+  incorrectCount  Int  @default(0)
+  lastReviewed    DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([subtopicId, nextReview])
+  @@map("flashcards")
+}
+
+// Active Recall - Quizzes
+model Quiz {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Quiz Details
+  title       String
+  type        String // "mcq", "fill-blank", "true-false", "short-answer"
+  difficulty  String // "easy", "medium", "hard"
+  
+  // Questions stored as JSON
+  questions   Json[] // [{question: string, options: string[], correctAnswer: string|number}]
+  
+  // Results
+  totalQuestions  Int
+  correctAnswers  Int      @default(0)
+  score           Float    @default(0)
+  timeTaken       Int? // seconds
+  
+  // Status
+  completed       Boolean  @default(false)
+  completedAt     DateTime?
+  
+  // Adaptive Learning
+  weakTopics      String[] // Topics where user struggled
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId, completed])
+  @@map("quizzes")
+}
+
+// Spaced Repetition - Revision Schedule
+model Revision {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Revision Details
+  topic           String
+  content         String?
+  revisionNumber  Int // 1st, 2nd, 3rd revision
+  
+  // Scheduling
+  scheduledDate   DateTime
+  completed       Boolean  @default(false)
+  completedAt     DateTime?
+  
+  // Performance
+  confidenceLevel Int? // 1-5 scale
+  notes           String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId, scheduledDate])
+  @@map("revisions")
+}
+
+// Dual Coding - Mindmaps & Visuals
+model Mindmap {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Mindmap Details
+  title       String
+  description String?
+  
+  // Mindmap Structure (stored as JSON)
+  nodes       Json // {id, label, x, y, color, children[]}
+  
+  // Metadata
+  style       String   @default("tree") // "tree", "radial", "org-chart"
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId])
+  @@map("mindmaps")
+}
+
+// Mnemonics
+model Mnemonic {
+  id          String   @id @default(cuid())
+  
+  // Mnemonic Content
+  topic       String
+  content     String
+  type        String // "acronym", "story", "rhyme", "association"
+  
+  // Usage
+  projectIds  String[] // Multiple projects can use same mnemonic
+  useCount    Int      @default(0)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([topic])
+  @@map("mnemonics")
+}
+
+// ============================================
+// GAMIFICATION
+// ============================================
+
+model Gamification {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // XP & Levels
+  totalXP         Int      @default(0)
+  level           Int      @default(1)
+  
+  // Streaks
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastActivityDate DateTime?
+  
+  // Badges (JSON array of badge IDs/names)
+  badges          String[]
+  
+  // Stats
+  totalStudyHours     Float    @default(0)
+  totalQuizzesTaken   Int      @default(0)
+  totalTasksCompleted Int      @default(0)
+  totalProjectsCompleted Int   @default(0)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("gamification")
+}
+
+// ============================================
+// PARENT / TEACHER DASHBOARD
+// ============================================
+
+model ParentAccess {
+  id          String   @id @default(cuid())
+  parentEmail String
+  studentId   String
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  // Access Control
+  accessLevel String   @default("view") // "view", "manage"
+  isActive    Boolean  @default(true)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([parentEmail, studentId])
+  @@map("parent_access")
+}
