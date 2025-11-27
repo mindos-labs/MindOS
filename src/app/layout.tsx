@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackClientApp } from "../stack/client";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Provider from "@/components/ui/provider";
@@ -34,9 +32,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}><StackProvider app={stackClientApp}><StackTheme>
+			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<Provider>{children}</Provider>
-			</StackTheme></StackProvider></body>
+			</body>
 		</html>
 	);
 }

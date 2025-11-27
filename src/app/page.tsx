@@ -12,11 +12,16 @@ import {
 	Text,
 	VStack,
 	HStack,
+	Link as ChakraLink,
 } from "@chakra-ui/react"
 import { FaBrain, FaBolt, FaLock, FaArrowRight, FaGithub } from "react-icons/fa"
 import { LuCheck } from "react-icons/lu"
+import { useUser, UserButton } from "@stackframe/stack"
+import Link from "next/link"
 
 export default function Home() {
+	const user = useUser();
+
 	return (
 		<Box minH="100vh" bg="bg.canvas">
 			{/* Navbar */}
@@ -27,8 +32,18 @@ export default function Home() {
 							Mindos
 						</Heading>
 						<HStack gap={4}>
-							<Button variant="ghost" size="sm">Log in</Button>
-							<Button size="sm" colorPalette="blue">Get Started</Button>
+							{user ? (
+								<UserButton />
+							) : (
+								<>
+									<Button variant="ghost" size="sm" asChild>
+										<Link href="/handler/sign-in">Log in</Link>
+									</Button>
+									<Button size="sm" colorPalette="blue" asChild>
+										<Link href="/handler/sign-up">Get Started</Link>
+									</Button>
+								</>
+							)}
 						</HStack>
 					</Flex>
 				</Container>
@@ -64,8 +79,10 @@ export default function Home() {
 						Capture ideas, organize thoughts, and retain information with the power of science.
 					</Text>
 					<Stack direction={{ base: "column", sm: "row" }} gap={4} pt={4}>
-						<Button size="xl" colorPalette="blue">
-							Start Learning Free <Icon as={FaArrowRight} />
+						<Button size="xl" colorPalette="blue" asChild>
+							<Link href="/handler/sign-up">
+								Start Learning Free <Icon as={FaArrowRight} />
+							</Link>
 						</Button>
 						<Button size="xl" variant="outline">
 							<Icon as={FaGithub} /> Star on GitHub
