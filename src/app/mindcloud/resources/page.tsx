@@ -225,7 +225,7 @@ export default function ResourcesPage() {
 
                                     <VStack align="start" gap={2}>
                                         <Heading size="md">{resource.title}</Heading>
-                                        <Text fontSize="sm" color="fg.muted" noOfLines={2}>
+                                        <Text fontSize="sm" color="fg.muted" lineClamp={2}>
                                             {resource.summary}
                                         </Text>
                                     </VStack>
