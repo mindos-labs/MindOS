@@ -90,7 +90,9 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
                     {/* Article Content */}
                     <Box
                         w="full"
-                        className="prose prose-lg dark:prose-invert max-w-none"
+                        color="fg"
+                        fontSize="lg"
+                        lineHeight="1.8"
                         sx={{
                             "& h1": {
                                 fontSize: "3xl",
@@ -112,7 +114,6 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
                             },
                             "& p": {
                                 mb: 4,
-                                lineHeight: "1.8",
                             },
                             "& ul, & ol": {
                                 mb: 4,
@@ -123,7 +124,6 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
                             },
                             "& strong": {
                                 fontWeight: "bold",
-                                color: "fg",
                             },
                             "& a": {
                                 color: "blue.500",
@@ -135,6 +135,8 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
                             "& table": {
                                 width: "full",
                                 mb: 4,
+                                borderWidth: "1px",
+                                borderColor: "border",
                             },
                             "& th": {
                                 bg: "bg.subtle",
@@ -145,6 +147,7 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
                             "& td": {
                                 p: 3,
                                 borderTopWidth: "1px",
+                                borderColor: "border",
                             },
                             "& blockquote": {
                                 borderLeftWidth: "4px",
