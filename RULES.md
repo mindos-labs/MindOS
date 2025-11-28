@@ -202,3 +202,150 @@ For custom animations, use:
 - [Animate UI GitHub](https://github.com/imskyleen/animate-ui)
 - [Lucide Icons](https://lucide.dev)
 - [Framer Motion](https://www.framer.com/motion/)
+
+## Server Components & Modular Architecture
+
+### Server Component First Principle
+
+**CRITICAL RULE: Never mark `page.tsx` or `layout.tsx` files as client components.**
+
+All `page.tsx` and `layout.tsx` files MUST be Server Components by default. This ensures:
+- Better performance (less JavaScript shipped to client)
+- Improved SEO (server-side rendering)
+- Reduced bundle size
+- Better data fetching patterns
+
+### Modular Component Architecture
+
+**Always create modular, manageable components instead of writing all code in page files.**
+
+#### Component Organization
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Server Component (NO "use client")
+│   └── layout.tsx            # Server Component (NO "use client")
+└── components/
+    ├── landing/              # Feature-specific components
+    │   ├── hero-section.tsx
+    │   ├── features-section.tsx
+    │   ├── cta-section.tsx
+    │   └── footer.tsx
+    └── ui/                   # Reusable UI components
+        └── ...
+```
+
+#### When to Use "use client"
+
+Only mark components as client components when they:
+1. Use React hooks (`useState`, `useEffect`, etc.)
+2. Use browser APIs (`window`, `document`, etc.)
+3. Handle user interactions (click handlers, form submissions)
+4. Use client-side libraries (animation libraries, etc.)
+
+#### Component Separation Pattern
+
+**Bad ❌:**
+```tsx
+// app/page.tsx
+"use client"  // DON'T DO THIS!
+
+export default function Page() {
+  const [state, setState] = useState()
+  // All page logic here...
+}
+```
+
+**Good ✅:**
+```tsx
+// app/page.tsx (Server Component)
+import { HeroSection } from "@/components/landing/hero-section"
+import { FeaturesSection } from "@/components/landing/features-section"
+
+export default function Page() {
+  return (
+    <>
+      <HeroSection />
+      <FeaturesSection />
+    </>
+  )
+}
+
+// components/landing/hero-section.tsx (Client Component)
+"use client"
+
+export function HeroSection() {
+  const [state, setState] = useState()
+  // Client-side logic here
+}
+```
+
+#### Benefits of Modular Components
+
+1. **Maintainability**: Easier to find and update specific sections
+2. **Reusability**: Components can be reused across pages
+3. **Testing**: Individual components are easier to test
+4. **Performance**: Only client components that need interactivity are marked as such
+5. **Code Organization**: Clear separation of concerns
+6. **Collaboration**: Multiple developers can work on different components
+
+#### Component Naming Conventions
+
+- **Sections**: Use descriptive names ending in "Section" (e.g., `HeroSection`, `FeaturesSection`)
+- **Cards**: Use "Card" suffix for card-like components (e.g., `FeatureCard`, `PricingCard`)
+- **Client Components**: Clearly indicate interactivity in the name if needed (e.g., `InteractiveChart`)
+
+#### File Structure Best Practices
+
+```
+components/
+├── landing/                  # Landing page specific
+│   ├── hero-section.tsx
+│   ├── features-section.tsx
+│   ├── feature-card.tsx
+│   ├── cta-section.tsx
+│   ├── navbar.tsx
+│   └── footer.tsx
+├── dashboard/                # Dashboard specific
+│   └── ...
+└── ui/                       # Shared UI components
+    └── ...
+```
+
+### Migration Checklist
+
+When refactoring existing pages:
+
+- [ ] Remove `"use client"` from `page.tsx` or `layout.tsx`
+- [ ] Extract sections into separate component files
+- [ ] Only add `"use client"` to components that need it
+- [ ] Move client-side logic (hooks, event handlers) to client components
+- [ ] Keep server-side logic (data fetching, metadata) in page files
+- [ ] Test that all functionality still works
+- [ ] Verify bundle size reduction
+
+### Example: Landing Page Structure
+
+```tsx
+// app/page.tsx (Server Component)
+import { Navbar } from "@/components/landing/navbar"
+import { HeroSection } from "@/components/landing/hero-section"
+import { FeaturesSection } from "@/components/landing/features-section"
+import { CTASection } from "@/components/landing/cta-section"
+import { Footer } from "@/components/landing/footer"
+
+export default function LandingPage() {
+  return (
+    <>
+      <Navbar />
+      <HeroSection />
+      <FeaturesSection />
+      <CTASection />
+      <Footer />
+    </>
+  )
+}
+```
+
+This approach ensures optimal performance while maintaining clean, maintainable code.
