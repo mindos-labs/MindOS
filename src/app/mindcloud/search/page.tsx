@@ -4,7 +4,6 @@ import {
     Box,
     Button,
     Heading,
-    SimpleGrid,
     Text,
     VStack,
     HStack,
@@ -14,7 +13,7 @@ import {
     Card,
     Badge,
     Flex,
-    Checkbox,
+    Container,
 } from "@chakra-ui/react"
 import {
     FaSearch,
@@ -22,8 +21,8 @@ import {
     FaFilePdf,
     FaGlobe,
     FaStickyNote,
-    FaFilter,
-    FaTimes
+    FaClock,
+    FaDatabase,
 } from "react-icons/fa"
 import Link from "next/link"
 import { useState } from "react"
@@ -32,47 +31,68 @@ import { useSearchParams } from "next/navigation"
 const mockSearchResults = [
     {
         id: "1",
-        title: "Introduction to Machine Learning",
+        title: "Introduction to Machine Learning - Complete Guide",
         type: "video",
         icon: FaYoutube,
         color: "red",
-        summary: "Comprehensive guide to ML fundamentals covering supervised and unsupervised learning algorithms",
-        tags: ["AI", "ML", "Python"],
+        url: "youtube.com/watch?v=example",
+        summary: "Comprehensive guide to ML fundamentals covering supervised and unsupervised learning algorithms, neural networks, and practical applications in Python",
+        tags: ["AI", "ML", "Python", "Tutorial"],
         relevance: 95,
         date: "2024-11-25",
+        views: "2.4M",
     },
     {
         id: "2",
-        title: "Deep Learning Research Paper",
+        title: "Deep Learning Research Paper - Transformer Architectures",
         type: "pdf",
         icon: FaFilePdf,
         color: "orange",
-        summary: "Latest advances in transformer architectures and attention mechanisms for NLP tasks",
-        tags: ["Deep Learning", "Transformers", "Research"],
+        url: "arxiv.org/abs/example",
+        summary: "Latest advances in transformer architectures and attention mechanisms for NLP tasks. Includes benchmarks on GPT-4 and BERT models",
+        tags: ["Deep Learning", "Transformers", "Research", "NLP"],
         relevance: 88,
         date: "2024-11-22",
+        views: "145K",
     },
     {
         id: "3",
-        title: "Neural Networks Explained",
+        title: "Neural Networks Explained - Interactive Tutorial",
         type: "website",
         icon: FaGlobe,
         color: "blue",
-        summary: "Interactive tutorial on how neural networks work with visualizations",
-        tags: ["AI", "Neural Networks", "Tutorial"],
+        url: "neuralnetworks.dev",
+        summary: "Interactive tutorial on how neural networks work with visualizations, code examples, and hands-on exercises for beginners",
+        tags: ["AI", "Neural Networks", "Tutorial", "Interactive"],
         relevance: 82,
         date: "2024-11-20",
+        views: "890K",
     },
     {
         id: "4",
-        title: "My ML Study Notes",
+        title: "My ML Study Notes - Algorithms and Applications",
         type: "note",
         icon: FaStickyNote,
         color: "purple",
-        summary: "Personal notes on machine learning algorithms and their applications",
-        tags: ["ML", "Notes", "Study"],
+        url: "mindcloud/notes/4",
+        summary: "Personal notes on machine learning algorithms including decision trees, random forests, SVMs, and their real-world applications",
+        tags: ["ML", "Notes", "Study", "Algorithms"],
         relevance: 75,
         date: "2024-11-18",
+        views: "Personal",
+    },
+    {
+        id: "5",
+        title: "PyTorch vs TensorFlow - Framework Comparison 2024",
+        type: "website",
+        icon: FaGlobe,
+        color: "blue",
+        url: "mlframeworks.com/comparison",
+        summary: "In-depth comparison of PyTorch and TensorFlow frameworks, covering performance, ease of use, community support, and production deployment",
+        tags: ["PyTorch", "TensorFlow", "ML", "Frameworks"],
+        relevance: 70,
+        date: "2024-11-15",
+        views: "1.2M",
     },
 ]
 
@@ -82,264 +102,189 @@ export default function SearchPage() {
 
     const [searchQuery, setSearchQuery] = useState(initialQuery)
     const [activeQuery, setActiveQuery] = useState(initialQuery)
-    const [selectedTypes, setSelectedTypes] = useState<string[]>([])
-    const [selectedTags, setSelectedTags] = useState<string[]>([])
-    const [semanticSearch, setSemanticSearch] = useState(true)
 
     const handleSearch = () => {
         setActiveQuery(searchQuery)
     }
 
     const filteredResults = mockSearchResults.filter(result => {
-        const matchesQuery = activeQuery === "" ||
-            result.title.toLowerCase().includes(activeQuery.toLowerCase()) ||
+        if (activeQuery === "") return true
+        return result.title.toLowerCase().includes(activeQuery.toLowerCase()) ||
             result.summary.toLowerCase().includes(activeQuery.toLowerCase()) ||
             result.tags.some(tag => tag.toLowerCase().includes(activeQuery.toLowerCase()))
-
-        const matchesType = selectedTypes.length === 0 || selectedTypes.includes(result.type)
-        const matchesTags = selectedTags.length === 0 ||
-            result.tags.some(tag => selectedTags.includes(tag))
-
-        return matchesQuery && matchesType && matchesTags
     })
 
-    const allTags = Array.from(new Set(mockSearchResults.flatMap(r => r.tags)))
+    const totalResources = "127,543"
+    const searchTime = "0.42"
 
     return (
-        <Flex gap={8}>
-            {/* Filters Sidebar */}
-            <Box w="280px" flexShrink={0}>
-                <VStack align="stretch" gap={6}>
-                    <Box>
-                        <HStack justify="space-between" mb={4}>
-                            <Heading size="md">Filters</Heading>
-                            {(selectedTypes.length > 0 || selectedTags.length > 0) && (
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => {
-                                        setSelectedTypes([])
-                                        setSelectedTags([])
-                                    }}
-                                >
-                                    Clear All
-                                </Button>
-                            )}
+        <Box minH="100vh">
+            {/* Search Header */}
+            <Box
+                bg={activeQuery ? "bg.panel" : "bg.canvas"}
+                borderBottomWidth={activeQuery ? "1px" : 0}
+                py={activeQuery ? 4 : 0}
+                position="sticky"
+                top={0}
+                zIndex={10}
+            >
+                <Container maxW="container.xl">
+                    {activeQuery ? (
+                        // Compact search bar (like Google after search)
+                        <HStack gap={4}>
+                            <Link href="/mindcloud">
+                                <Heading size="lg" color="blue.500">MindCloud</Heading>
+                            </Link>
+                            <InputGroup flex={1} maxW="600px">
+                                <Input
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                                    size="md"
+                                />
+                            </InputGroup>
+                            <Button colorPalette="blue" onClick={handleSearch}>
+                                <Icon as={FaSearch} />
+                            </Button>
                         </HStack>
+                    ) : (
+                        // Centered search (like Google homepage)
+                        <VStack gap={8} py={20} textAlign="center">
+                            <VStack gap={2}>
+                                <HStack gap={2}>
+                                    <Icon as={FaDatabase} boxSize={10} color="blue.500" />
+                                    <Heading size="4xl" fontWeight="bold">
+                                        Mind<Box as="span" color="blue.500">Cloud</Box>
+                                    </Heading>
+                                </HStack>
+                                <Text color="fg.muted" fontSize="lg">
+                                    Search {totalResources} learning resources
+                                </Text>
+                            </VStack>
 
-                        {/* Search Mode */}
-                        <Card.Root variant="outline" mb={4}>
-                            <Card.Body>
-                                <VStack align="stretch" gap={3}>
-                                    <Text fontWeight="medium" fontSize="sm">Search Mode</Text>
-                                    <Checkbox.Root
-                                        checked={semanticSearch}
-                                        onCheckedChange={(e) => setSemanticSearch(!!e.checked)}
-                                    >
-                                        <Checkbox.HiddenInput />
-                                        <Checkbox.Control />
-                                        <Checkbox.Label>
-                                            <Text fontSize="sm">Semantic Search</Text>
-                                        </Checkbox.Label>
-                                    </Checkbox.Root>
-                                    <Text fontSize="xs" color="fg.muted">
-                                        {semanticSearch
-                                            ? "AI-powered search finds related concepts"
-                                            : "Exact keyword matching only"}
-                                    </Text>
-                                </VStack>
-                            </Card.Body>
-                        </Card.Root>
+                            <VStack gap={4} w="full" maxW="600px">
+                                <InputGroup>
+                                    <Input
+                                        placeholder="Search for anything..."
+                                        size="xl"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                                    />
+                                </InputGroup>
+                                <HStack gap={3}>
+                                    <Button colorPalette="blue" onClick={handleSearch}>
+                                        <Icon as={FaSearch} /> MindCloud Search
+                                    </Button>
+                                    <Button variant="outline" asChild>
+                                        <Link href="/mindcloud">I'm Feeling Lucky</Link>
+                                    </Button>
+                                </HStack>
+                            </VStack>
 
-                        {/* Resource Type */}
-                        <Card.Root variant="outline" mb={4}>
-                            <Card.Body>
-                                <VStack align="stretch" gap={3}>
-                                    <Text fontWeight="medium" fontSize="sm">Resource Type</Text>
-                                    {["video", "pdf", "website", "note"].map((type) => (
-                                        <Checkbox.Root
-                                            key={type}
-                                            checked={selectedTypes.includes(type)}
-                                            onCheckedChange={(e: any) => {
-                                                if (e.checked) {
-                                                    setSelectedTypes([...selectedTypes, type])
-                                                } else {
-                                                    setSelectedTypes(selectedTypes.filter(t => t !== type))
-                                                }
-                                            }}
-                                        >
-                                            <Checkbox.HiddenInput />
-                                            <Checkbox.Control />
-                                            <Checkbox.Label>
-                                                <Text fontSize="sm" textTransform="capitalize">{type}s</Text>
-                                            </Checkbox.Label>
-                                        </Checkbox.Root>
-                                    ))}
-                                </VStack>
-                            </Card.Body>
-                        </Card.Root>
-
-                        {/* Tags */}
-                        <Card.Root variant="outline">
-                            <Card.Body>
-                                <VStack align="stretch" gap={3}>
-                                    <Text fontWeight="medium" fontSize="sm">Tags</Text>
-                                    <Flex gap={2} flexWrap="wrap">
-                                        {allTags.map((tag) => (
-                                            <Badge
-                                                key={tag}
-                                                size="sm"
-                                                variant={selectedTags.includes(tag) ? "solid" : "outline"}
-                                                colorPalette="blue"
-                                                cursor="pointer"
-                                                onClick={() => {
-                                                    if (selectedTags.includes(tag)) {
-                                                        setSelectedTags(selectedTags.filter(t => t !== tag))
-                                                    } else {
-                                                        setSelectedTags([...selectedTags, tag])
-                                                    }
-                                                }}
-                                            >
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                    </Flex>
-                                </VStack>
-                            </Card.Body>
-                        </Card.Root>
-                    </Box>
-                </VStack>
+                            <HStack gap={4} fontSize="sm" color="fg.muted">
+                                <Text>Popular: Machine Learning</Text>
+                                <Text>•</Text>
+                                <Text>React</Text>
+                                <Text>•</Text>
+                                <Text>System Design</Text>
+                            </HStack>
+                        </VStack>
+                    )}
+                </Container>
             </Box>
 
-            {/* Main Content */}
-            <VStack align="stretch" gap={6} flex={1}>
-                {/* Search Bar */}
-                <Box>
-                    <Heading size="2xl" mb={4}>Advanced Search</Heading>
-                    <HStack gap={3}>
-                        <InputGroup flex={1}>
-                            <Input
-                                placeholder="Search resources, notes, topics..."
-                                size="lg"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                            />
-                        </InputGroup>
-                        <Button size="lg" colorPalette="blue" onClick={handleSearch}>
-                            <Icon as={FaSearch} /> Search
-                        </Button>
-                    </HStack>
-                </Box>
+            {/* Search Results */}
+            {activeQuery && (
+                <Container maxW="container.lg" py={6}>
+                    <VStack align="stretch" gap={6}>
+                        {/* Search Stats */}
+                        <Text fontSize="sm" color="fg.muted">
+                            About {filteredResults.length.toLocaleString()} results ({searchTime} seconds)
+                        </Text>
 
-                {/* Active Filters */}
-                {(selectedTypes.length > 0 || selectedTags.length > 0) && (
-                    <HStack gap={2} flexWrap="wrap">
-                        <Text fontSize="sm" fontWeight="medium">Active filters:</Text>
-                        {selectedTypes.map((type) => (
-                            <Badge
-                                key={type}
-                                size="sm"
-                                variant="solid"
-                                colorPalette="blue"
-                            >
-                                {type}
-                                <Icon
-                                    as={FaTimes}
-                                    ml={1}
-                                    cursor="pointer"
-                                    onClick={() => setSelectedTypes(selectedTypes.filter(t => t !== type))}
-                                />
-                            </Badge>
-                        ))}
-                        {selectedTags.map((tag) => (
-                            <Badge
-                                key={tag}
-                                size="sm"
-                                variant="solid"
-                                colorPalette="purple"
-                            >
-                                {tag}
-                                <Icon
-                                    as={FaTimes}
-                                    ml={1}
-                                    cursor="pointer"
-                                    onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))}
-                                />
-                            </Badge>
-                        ))}
-                    </HStack>
-                )}
+                        {/* Results */}
+                        <VStack align="stretch" gap={4}>
+                            {filteredResults.map((result) => (
+                                <Card.Root
+                                    key={result.id}
+                                    variant="ghost"
+                                    p={4}
+                                    _hover={{ bg: "bg.subtle" }}
+                                    transition="all 0.2s"
+                                    asChild
+                                >
+                                    <Link href={`/mindcloud/resources/${result.id}`}>
+                                        <VStack align="start" gap={2}>
+                                            {/* URL and Type */}
+                                            <HStack gap={2} fontSize="sm">
+                                                <Icon as={result.icon} color={`${result.color}.500`} />
+                                                <Text color="fg.muted">{result.url}</Text>
+                                                <Badge size="xs" variant="subtle">
+                                                    {result.type}
+                                                </Badge>
+                                            </HStack>
 
-                {/* Results */}
-                <Box>
-                    <Text color="fg.muted" mb={4}>
-                        {filteredResults.length} results found
-                        {activeQuery && ` for "${activeQuery}"`}
-                    </Text>
-
-                    <VStack align="stretch" gap={4}>
-                        {filteredResults.map((result) => (
-                            <Card.Root
-                                key={result.id}
-                                variant="outline"
-                                _hover={{ shadow: "md" }}
-                                transition="all 0.2s"
-                                asChild
-                            >
-                                <Link href={`/mindcloud/resources/${result.id}`}>
-                                    <Card.Body>
-                                        <Flex gap={4}>
-                                            <Box
-                                                p={3}
-                                                bg={`${result.color}.subtle`}
-                                                color={`${result.color}.fg`}
-                                                rounded="lg"
-                                                h="fit-content"
+                                            {/* Title */}
+                                            <Heading
+                                                size="lg"
+                                                color="blue.600"
+                                                _hover={{ textDecoration: "underline" }}
                                             >
-                                                <Icon as={result.icon} boxSize={6} />
-                                            </Box>
+                                                {result.title}
+                                            </Heading>
 
-                                            <VStack align="start" gap={2} flex={1}>
-                                                <HStack justify="space-between" w="full">
-                                                    <Heading size="lg">{result.title}</Heading>
-                                                    <Badge size="sm" colorPalette="green">
-                                                        {result.relevance}% match
-                                                    </Badge>
+                                            {/* Summary */}
+                                            <Text color="fg.muted" lineClamp={2}>
+                                                {result.summary}
+                                            </Text>
+
+                                            {/* Meta Info */}
+                                            <HStack gap={4} fontSize="xs" color="fg.muted">
+                                                <HStack gap={1}>
+                                                    <Icon as={FaClock} />
+                                                    <Text>{new Date(result.date).toLocaleDateString()}</Text>
                                                 </HStack>
-
-                                                <Text color="fg.muted">{result.summary}</Text>
-
-                                                <HStack gap={2} flexWrap="wrap">
-                                                    <Badge size="sm" variant="subtle">
-                                                        {result.type}
-                                                    </Badge>
-                                                    {result.tags.map((tag) => (
-                                                        <Badge key={tag} size="sm" variant="outline">
+                                                <Text>•</Text>
+                                                <Text>{result.views} views</Text>
+                                                <Text>•</Text>
+                                                <HStack gap={1}>
+                                                    {result.tags.slice(0, 3).map((tag) => (
+                                                        <Badge key={tag} size="xs" variant="outline">
                                                             {tag}
                                                         </Badge>
                                                     ))}
-                                                    <Text fontSize="xs" color="fg.muted" ml="auto">
-                                                        {new Date(result.date).toLocaleDateString()}
-                                                    </Text>
                                                 </HStack>
-                                            </VStack>
-                                        </Flex>
-                                    </Card.Body>
-                                </Link>
-                            </Card.Root>
-                        ))}
-                    </VStack>
+                                            </HStack>
+                                        </VStack>
+                                    </Link>
+                                </Card.Root>
+                            ))}
+                        </VStack>
 
-                    {filteredResults.length === 0 && (
-                        <Box textAlign="center" py={12}>
-                            <Icon as={FaSearch} boxSize={12} color="fg.muted" mb={4} />
-                            <Heading size="lg" mb={2}>No results found</Heading>
-                            <Text color="fg.muted">Try adjusting your search query or filters</Text>
-                        </Box>
-                    )}
-                </Box>
-            </VStack>
-        </Flex>
+                        {filteredResults.length === 0 && (
+                            <Box textAlign="center" py={12}>
+                                <Icon as={FaSearch} boxSize={12} color="fg.muted" mb={4} />
+                                <Heading size="lg" mb={2}>No results found</Heading>
+                                <Text color="fg.muted">
+                                    Try different keywords or check your spelling
+                                </Text>
+                            </Box>
+                        )}
+
+                        {/* Pagination placeholder */}
+                        {filteredResults.length > 0 && (
+                            <HStack justify="center" gap={2} pt={8}>
+                                <Button variant="ghost" size="sm" disabled>Previous</Button>
+                                <Button variant="solid" colorPalette="blue" size="sm">1</Button>
+                                <Button variant="ghost" size="sm">2</Button>
+                                <Button variant="ghost" size="sm">3</Button>
+                                <Button variant="ghost" size="sm">Next</Button>
+                            </HStack>
+                        )}
+                    </VStack>
+                </Container>
+            )}
+        </Box>
     )
 }
