@@ -2,6 +2,8 @@
 
 This document outlines the development standards and best practices for the MindOS project.
 
+always use bun no npm
+
 ## UI Component Standards
 
 ### Animated Icons
