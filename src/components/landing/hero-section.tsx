@@ -4,7 +4,6 @@ import Image from "next/image"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 import { ArrowRight } from "@/components/animate-ui/icons/arrow-right"
 import { Github } from "lucide-react"
-import { HeroVideoDialog } from "@/components/ui/hero-video-dialog"
 
 export function HeroSection() {
     return (
@@ -66,13 +65,31 @@ export function HeroSection() {
 
                 {/* Hero Video */}
                 <Box position="relative" display={{ base: "none", lg: "block" }}>
-                    <HeroVideoDialog
-                        className="block dark:hidden"
-                        animationStyle="from-center"
-                        videoSrc="https://www.youtube-nocookie.com/embed/tsmxUTiqJkE?si=QxPGPFp3sZ_ZyQKA"
-                        thumbnailSrc="https://i.ytimg.com/vi/tsmxUTiqJkE/hqdefault.jpg"
-                        thumbnailAlt="MindOS Demo Video"
-                    />
+                    <Box
+                        position="relative"
+                        paddingBottom="56.25%" /* 16:9 aspect ratio */
+                        height="0"
+                        overflow="hidden"
+                        borderRadius="lg"
+                        boxShadow="xl"
+                    >
+                        <iframe
+                            src="https://www.youtube.com/embed/tsmxUTiqJkE?si=xrJKY3fzd8lsdSg4"
+                            title="MindOS Demo Video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                border: 0,
+                                borderRadius: "0.5rem",
+                            }}
+                        />
+                    </Box>
                 </Box>
             </SimpleGrid>
 

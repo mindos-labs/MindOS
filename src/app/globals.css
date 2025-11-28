@@ -128,7 +128,28 @@
     transform: translateY(calc(-100% - var(--gap)));
 		}
 	}
-}
+  --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite
+;
+  @keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+		}
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+		}
+	}
+  --animate-shine: shine var(--duration) infinite linear;
+  @keyframes shine {
+  0% {
+    background-position: 0% 0%;
+		}
+  50% {
+    background-position: 100% 100%;
+		}
+  to {
+    background-position: 0% 0%;
+		}
+	}}
 
 body {
 	font-family: var(--font-body, Arial, Helvetica, sans-serif);

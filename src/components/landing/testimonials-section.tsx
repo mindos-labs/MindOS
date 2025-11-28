@@ -111,6 +111,7 @@ export function TestimonialsSection() {
                                 <TestimonialCard key={index} {...testimonial} />
                             ))}
                         </Marquee>
+                        <br /><br />
                         <Marquee reverse pauseOnHover className="[--duration:40s] mt-4">
                             {secondRow.map((testimonial, index) => (
                                 <TestimonialCard key={index} {...testimonial} />
