@@ -8,27 +8,32 @@ import {
     Text,
     VStack,
 } from "@chakra-ui/react"
+import { CountingNumber } from "@/components/animate-ui/primitives/texts/counting-number"
 
 const stats = [
     {
-        value: "15",
+        value: 15,
+        suffix: "",
         label: "Science-Backed Techniques",
         description: "From Spaced Repetition to Feynman"
     },
     {
-        value: "80%",
+        value: 80,
+        suffix: "%",
         label: "Retention Improvement",
         description: "Students remember what they learn"
     },
     {
-        value: "AI-Powered",
-        label: "Personalized Learning",
+        value: 100,
+        suffix: "%",
+        label: "AI-Powered Learning",
         description: "Custom study plans for every goal"
     },
     {
-        value: "Forever",
-        label: "Long-Term Mastery",
-        description: "Learn once, remember always"
+        value: 1000,
+        suffix: "+",
+        label: "Active Learners",
+        description: "Join our growing community"
     }
 ]
 
@@ -57,9 +62,15 @@ export default function StatsSection() {
                                 gap={2}
                                 textAlign="center"
                             >
-                                <Text fontSize="5xl" fontWeight="bold">
-                                    {stat.value}
-                                </Text>
+                                <CountingNumber
+                                    number={stat.value}
+                                    suffix={stat.suffix}
+                                    animateOnView
+                                    animateOnViewOnce
+                                    duration={2000}
+                                    delay={index * 100}
+                                    className="text-5xl font-bold"
+                                />
                                 <Text fontSize="xl" fontWeight="semibold">
                                     {stat.label}
                                 </Text>

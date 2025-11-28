@@ -1,0 +1,204 @@
+# MindOS Development Rules
+
+This document outlines the development standards and best practices for the MindOS project.
+
+## UI Component Standards
+
+### Animated Icons
+
+**Always use animate-ui for animated icons** to provide a consistent, polished user experience across the application.
+
+- **Reference**: https://animate-ui.com/docs/icons
+- **Installation Guide**: https://animate-ui.com/docs/installation
+- **Icon List**: https://animate-ui.com/docs/icons
+
+### Installation Process
+
+#### 1. Install Icon Wrapper (One-time setup)
+
+The icon wrapper component is required for all animated icons:
+
+```bash
+bunx --bun shadcn@latest add @animate-ui/icons-icon
+```
+
+This creates:
+- `src/hooks/use-is-in-view.tsx` - Hook for view-based animations
+- `src/components/animate-ui/primitives/animate/slot.tsx` - Animation slot component
+- `src/components/animate-ui/icons/icon.tsx` - Core icon wrapper and AnimateIcon component
+
+#### 2. Install Specific Animated Icons
+
+Install individual animated icons as needed:
+
+```bash
+bunx --bun shadcn@latest add @animate-ui/icons-[icon-name]
+```
+
+**Examples:**
+```bash
+bunx --bun shadcn@latest add @animate-ui/icons-arrow-right
+bunx --bun shadcn@latest add @animate-ui/icons-lock
+bunx --bun shadcn@latest add @animate-ui/icons-check
+```
+
+**Note**: Not all Lucide icons are available as pre-built animate-ui components. Check the [animate-ui icons page](https://animate-ui.com/docs/icons) for available icons.
+
+#### 3. For Icons Not Available in animate-ui
+
+Use the `AnimateIcon` wrapper with `lucide-react` icons:
+
+```tsx
+import { AnimateIcon } from "@/components/animate-ui/icons/icon"
+import { Brain, Zap, Github } from "lucide-react"
+
+// Wrap lucide-react icons with AnimateIcon for animations
+<AnimateIcon animateOnHover>
+  <Brain size={32} />
+</AnimateIcon>
+```
+
+### Icon Usage Guidelines
+
+#### When to Use Animated vs Static Icons
+
+- **Use animated icons**: For interactive elements, CTAs, feature highlights, and any UI element where you want to draw attention
+- **Use static icons**: For dense UI areas, navigation menus (unless hover is desired), or when performance is critical
+
+#### Animation Triggers
+
+Choose the appropriate trigger based on user interaction:
+
+| Trigger | Use Case | Example |
+|---------|----------|---------|
+| `animateOnHover` | Interactive elements, buttons, links | CTA buttons, feature cards |
+| `animateOnView` | Elements that should animate when scrolled into view | Feature sections, testimonials |
+| `animateOnTap` | Mobile-friendly interactions | Mobile buttons, touch targets |
+| `animate` | Programmatic control | Loading states, notifications |
+
+#### Example Usage
+
+**Pre-built Animated Icon:**
+```tsx
+import { ArrowRight } from "@/components/animate-ui/icons/arrow-right"
+
+<ArrowRight 
+  animateOnHover 
+  size={20} 
+  className="inline-block ml-1" 
+/>
+```
+
+**AnimateIcon Wrapper with Lucide Icon:**
+```tsx
+import { AnimateIcon } from "@/components/animate-ui/icons/icon"
+import { Brain } from "lucide-react"
+
+<AnimateIcon animateOnHover>
+  <Brain size={32} color="#3b82f6" />
+</AnimateIcon>
+```
+
+**With Loop Animation:**
+```tsx
+<ArrowRight 
+  animateOnHover 
+  loop 
+  loopDelay={1000}
+  size={24} 
+/>
+```
+
+### Component Directory Structure
+
+Animate-ui components are organized as follows:
+
+```
+src/
+├── components/
+│   └── animate-ui/
+│       ├── icons/
+│       │   ├── icon.tsx           # Core wrapper & AnimateIcon
+│       │   ├── arrow-right.tsx    # Pre-built animated icons
+│       │   ├── lock.tsx
+│       │   └── ...
+│       └── primitives/
+│           └── animate/
+│               └── slot.tsx
+└── hooks/
+    └── use-is-in-view.tsx
+```
+
+### Import Patterns
+
+**Pre-built Animated Icons:**
+```tsx
+import { ArrowRight } from "@/components/animate-ui/icons/arrow-right"
+import { Lock } from "@/components/animate-ui/icons/lock"
+```
+
+**AnimateIcon Wrapper:**
+```tsx
+import { AnimateIcon } from "@/components/animate-ui/icons/icon"
+```
+
+**Lucide Icons (for use with AnimateIcon):**
+```tsx
+import { Brain, Zap, Github } from "lucide-react"
+```
+
+## Animation Standards
+
+### Timing
+
+- **Default duration**: 0.3s for most interactions
+- **Hover effects**: 0.3s ease-in-out
+- **View animations**: 0.6-0.8s for entrance effects
+- **Loop delays**: Minimum 1000ms between loops to avoid overwhelming users
+
+### Accessibility
+
+**Always respect reduced motion preferences**. The animate-ui components automatically handle this, but be mindful when adding custom animations.
+
+```tsx
+// animate-ui handles this automatically
+<ArrowRight animateOnHover size={20} />
+```
+
+For custom animations, use:
+```tsx
+@media (prefers-reduced-motion: reduce) {
+  /* Disable or simplify animations */
+}
+```
+
+### Performance Considerations
+
+- **Limit simultaneous animations**: Avoid animating too many elements at once
+- **Use `animateOnView` wisely**: Set `animateOnViewOnce={true}` for better performance
+- **Optimize for mobile**: Test animations on mobile devices to ensure smooth performance
+
+```tsx
+<AnimateIcon 
+  animateOnView 
+  animateOnViewOnce={true}  // Only animate once when scrolled into view
+  animateOnViewMargin="0px"
+>
+  <Icon />
+</AnimateIcon>
+```
+
+## Best Practices
+
+1. **Consistency**: Use the same animation style for similar UI elements
+2. **Subtlety**: Animations should enhance, not distract from content
+3. **Purpose**: Every animation should have a clear purpose (feedback, attention, delight)
+4. **Testing**: Always test animations across different devices and browsers
+5. **Documentation**: Document custom animation variants in component files
+
+## Additional Resources
+
+- [Animate UI Documentation](https://animate-ui.com/docs)
+- [Animate UI GitHub](https://github.com/imskyleen/animate-ui)
+- [Lucide Icons](https://lucide.dev)
+- [Framer Motion](https://www.framer.com/motion/)
