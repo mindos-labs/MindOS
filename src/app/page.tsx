@@ -1,7 +1,9 @@
 import { Box } from "@chakra-ui/react"
 import { LandingNavbar } from "@/components/landing/landing-navbar"
 import { HeroSection } from "@/components/landing/hero-section"
-import { FeaturesSection } from "@/components/landing/features-section"
+import { WhyMindosSection } from "@/components/landing/why-mindos-section"
+import { ScienceSection } from "@/components/landing/science-section"
+import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { CTASection } from "@/components/landing/cta-section"
 import { LandingFooter } from "@/components/landing/landing-footer"
 import TechniquesShowcase from "@/components/landing-new/TechniquesShowcase"
@@ -13,7 +15,9 @@ export default function Home() {
 		<Box minH="100vh" bg="bg.canvas">
 			<LandingNavbar />
 			<HeroSection />
-			<FeaturesSection />
+			<WhyMindosSection />
+			<ScienceSection />
+			<TestimonialsSection />
 			<TechniquesShowcase />
 			<HowItWorksSection />
 			<StatsSection />

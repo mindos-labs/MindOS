@@ -4,6 +4,7 @@ import Image from "next/image"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 import { ArrowRight } from "@/components/animate-ui/icons/arrow-right"
 import { Github } from "lucide-react"
+import { HeroVideoDialog } from "@/components/ui/hero-video-dialog"
 
 export function HeroSection() {
     return (
@@ -63,27 +64,15 @@ export function HeroSection() {
                     </Box>
                 </VStack>
 
-                {/* Hero Illustration */}
+                {/* Hero Video */}
                 <Box position="relative" display={{ base: "none", lg: "block" }}>
-                    <AnimateIcon animateOnView animateOnViewOnce>
-                        <Box
-                            position="relative"
-                            width="100%"
-                            height="auto"
-                            opacity={0.95}
-                            transition="all 0.3s ease"
-                            _hover={{ opacity: 1, transform: "scale(1.02)" }}
-                        >
-                            <Image
-                                src="/illustration-1.png"
-                                alt="MindOS AI Knowledge Management Illustration"
-                                width={600}
-                                height={600}
-                                priority
-                                style={{ width: "100%", height: "auto", borderRadius: "1.5rem" }}
-                            />
-                        </Box>
-                    </AnimateIcon>
+                    <HeroVideoDialog
+                        className="block dark:hidden"
+                        animationStyle="from-center"
+                        videoSrc="https://www.youtube-nocookie.com/embed/tsmxUTiqJkE?si=QxPGPFp3sZ_ZyQKA"
+                        thumbnailSrc="https://i.ytimg.com/vi/tsmxUTiqJkE/hqdefault.jpg"
+                        thumbnailAlt="MindOS Demo Video"
+                    />
                 </Box>
             </SimpleGrid>
 
