@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/landing/hero-section"
 import { WhyMindosSection } from "@/components/landing/why-mindos-section"
 import { ScienceSection } from "@/components/landing/science-section"
 import { TestimonialsSection } from "@/components/landing/testimonials-section"
+import { SocialProofSection } from "@/components/landing/social-proof-section"
 import { CTASection } from "@/components/landing/cta-section"
 import { LandingFooter } from "@/components/landing/landing-footer"
 import TechniquesShowcase from "@/components/landing-new/TechniquesShowcase"
@@ -18,6 +19,7 @@ export default function Home() {
 			<WhyMindosSection />
 			<ScienceSection />
 			<TestimonialsSection />
+			<SocialProofSection />
 			<TechniquesShowcase />
 			<HowItWorksSection />
 			<StatsSection />
