@@ -106,10 +106,10 @@ export function ScienceSection() {
                         w="full"
                     >
                         <VStack gap={3}>
-                            <Heading size="2xl" color="blue.800">
+                            <Heading size="2xl" color="yellow.100">
                                 98% of users report better retention
                             </Heading>
-                            <Text fontSize="lg" color="blue.700" maxW="2xl">
+                            <Text fontSize="lg" color="yellow.200" maxW="2xl">
                                 Based on internal studies with 10,000+ students across 50+ universities.
                                 Average improvement in exam scores: 23%.
                             </Text>

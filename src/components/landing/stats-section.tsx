@@ -9,9 +9,8 @@ import {
     VStack,
     Icon,
 } from "@chakra-ui/react"
-import { NumberTicker } from "@/components/ui/number-ticker"
-import { Ripple } from "@/components/ui/ripple"
 import { FaBrain, FaChartLine, FaRocket, FaUsers } from "react-icons/fa"
+import { useEffect, useRef, useState } from "react"
 
 const stats = [
     {
@@ -20,7 +19,7 @@ const stats = [
         label: "Science-Backed Techniques",
         description: "From Spaced Repetition to Feynman",
         icon: FaBrain,
-        color: "blue.400",
+        color: "blue.500",
     },
     {
         value: 98,
@@ -28,7 +27,7 @@ const stats = [
         label: "Retention Improvement",
         description: "Students remember what they learn",
         icon: FaChartLine,
-        color: "green.400",
+        color: "green.500",
     },
     {
         value: 100,
@@ -36,7 +35,7 @@ const stats = [
         label: "AI-Powered Learning",
         description: "Custom study plans for every goal",
         icon: FaRocket,
-        color: "purple.400",
+        color: "purple.500",
     },
     {
         value: 10000,
@@ -44,14 +43,100 @@ const stats = [
         label: "Active Learners",
         description: "Join our growing community",
         icon: FaUsers,
-        color: "orange.400",
+        color: "orange.500",
     },
 ]
 
-export function StatsSection() {
+function CountingNumber({ value, suffix }: { value: number; suffix: string }) {
+    const [count, setCount] = useState(0)
+    const ref = useRef<HTMLDivElement>(null)
+    const [hasAnimated, setHasAnimated] = useState(false)
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !hasAnimated) {
+                    setHasAnimated(true)
+                    const duration = 2000
+                    const steps = 60
+                    const increment = value / steps
+                    let current = 0
+
+                    const timer = setInterval(() => {
+                        current += increment
+                        if (current >= value) {
+                            setCount(value)
+                            clearInterval(timer)
+                        } else {
+                            setCount(Math.floor(current))
+                        }
+                    }, duration / steps)
+
+                    return () => clearInterval(timer)
+                }
+            },
+            { threshold: 0.5 }
+        )
+
+        if (ref.current) {
+            observer.observe(ref.current)
+        }
+
+        return () => observer.disconnect()
+    }, [value, hasAnimated])
+
     return (
-        <Box py={24} bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" color="white" position="relative" overflow="hidden">
-            <Ripple />
+        <Box ref={ref} fontSize="5xl" fontWeight="bold" lineHeight="1">
+            {count.toLocaleString()}
+            <Box as="span">{suffix}</Box>
+        </Box>
+    )
+}
+
+export function StatsSection() {
+    const StatCard = ({ stat }: { stat: typeof stats[0] }) => (
+        <Box
+            p={8}
+            bg="whiteAlpha.200"
+            backdropFilter="blur(20px)"
+            rounded="2xl"
+            borderWidth="1px"
+            borderColor="whiteAlpha.300"
+            shadow="2xl"
+            textAlign="center"
+            transition="all 0.3s"
+            _hover={{
+                transform: "translateY(-8px) scale(1.02)",
+                shadow: "2xl",
+                bg: "whiteAlpha.300",
+            }}
+        >
+            <VStack gap={4}>
+                <Box
+                    p={4}
+                    bg={stat.color}
+                    rounded="full"
+                    display="inline-block"
+                >
+                    <Icon as={stat.icon} boxSize={8} color="white" />
+                </Box>
+
+                <CountingNumber value={stat.value} suffix={stat.suffix} />
+
+                <VStack gap={1}>
+                    <Text fontSize="xl" fontWeight="semibold">
+                        {stat.label}
+                    </Text>
+                    <Text fontSize="sm" opacity={0.9}>
+                        {stat.description}
+                    </Text>
+                </VStack>
+            </VStack>
+        </Box>
+    )
+
+    return (
+        <Box py={24} bgGradient="to-br" gradientFrom="blue.600" gradientTo="purple.700" color="white" position="relative" overflow="hidden">
             <Container maxW="container.xl" position="relative" zIndex={1}>
                 <VStack gap={16}>
                     <VStack gap={4} textAlign="center">
@@ -65,64 +150,7 @@ export function StatsSection() {
 
                     <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={8} w="full">
                         {stats.map((stat, index) => (
-                            <Box
-                                key={index}
-                                p={8}
-                                bg="whiteAlpha.200"
-                                backdropFilter="blur(20px)"
-                                rounded="2xl"
-                                borderWidth="1px"
-                                borderColor="whiteAlpha.300"
-                                shadow="2xl"
-                                textAlign="center"
-                                transition="all 0.3s"
-                                _hover={{
-                                    transform: "translateY(-8px) scale(1.02)",
-                                    shadow: "2xl",
-                                    bg: "whiteAlpha.300",
-                                }}
-                                position="relative"
-                                overflow="hidden"
-                            >
-                                <VStack gap={4}>
-                                    <Box
-                                        p={4}
-                                        bg={stat.color}
-                                        rounded="full"
-                                        display="inline-block"
-                                    >
-                                        <Icon as={stat.icon} boxSize={8} color="white" />
-                                    </Box>
-
-                                    <Box fontSize="5xl" fontWeight="bold" lineHeight="1">
-                                        <NumberTicker value={stat.value} />
-                                        <Box as="span">{stat.suffix}</Box>
-                                    </Box>
-
-                                    <VStack gap={1}>
-                                        <Text fontSize="xl" fontWeight="semibold">
-                                            {stat.label}
-                                        </Text>
-                                        <Text fontSize="sm" opacity={0.9}>
-                                            {stat.description}
-                                        </Text>
-                                    </VStack>
-                                </VStack>
-
-                                {/* Decorative shine effect */}
-                                <Box
-                                    position="absolute"
-                                    top="-50%"
-                                    right="-50%"
-                                    w="200%"
-                                    h="200%"
-                                    bg="linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)"
-                                    transform="rotate(45deg)"
-                                    opacity={0}
-                                    transition="opacity 0.5s"
-                                    _groupHover={{ opacity: 1 }}
-                                />
-                            </Box>
+                            <StatCard key={index} stat={stat} />
                         ))}
                     </SimpleGrid>
 
@@ -133,6 +161,28 @@ export function StatsSection() {
                     </Box>
                 </VStack>
             </Container>
+
+            {/* Decorative circles */}
+            <Box
+                position="absolute"
+                top="-10%"
+                right="-5%"
+                w="400px"
+                h="400px"
+                bg="whiteAlpha.100"
+                rounded="full"
+                filter="blur(60px)"
+            />
+            <Box
+                position="absolute"
+                bottom="-10%"
+                left="-5%"
+                w="300px"
+                h="300px"
+                bg="whiteAlpha.100"
+                rounded="full"
+                filter="blur(60px)"
+            />
         </Box>
     )
 }

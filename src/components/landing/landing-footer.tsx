@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Container, SimpleGrid, VStack, Text, HStack, Icon, Separator } from "@chakra-ui/react"
 import Link from "next/link"
 import { FaGithub, FaTwitter, FaDiscord, FaHeart } from "react-icons/fa"
@@ -5,9 +7,9 @@ import { FaGithub, FaTwitter, FaDiscord, FaHeart } from "react-icons/fa"
 const footerLinks = {
     product: [
         { label: "Features", href: "#features" },
+        { label: "Tools", href: "/tools" },
         { label: "Pricing", href: "#pricing" },
         { label: "Roadmap", href: "/roadmap" },
-        { label: "Changelog", href: "/changelog" },
     ],
     resources: [
         { label: "Documentation", href: "/docs" },
@@ -19,7 +21,11 @@ const footerLinks = {
         { label: "About", href: "/about" },
         { label: "Careers", href: "/careers" },
         { label: "Contact", href: "/contact" },
-        { label: "Privacy", href: "/privacy" },
+    ],
+    legal: [
+        { label: "Privacy Policy", href: "/privacy" },
+        { label: "Terms of Service", href: "/terms" },
+        { label: "Cookie Policy", href: "/cookies" },
     ],
 }
 
@@ -121,25 +127,23 @@ export function LandingFooter() {
                         ))}
                     </VStack>
 
-                    {/* Newsletter Section */}
+                    {/* Legal Links */}
                     <VStack align="start" gap={3}>
                         <Text fontSize="sm" fontWeight="semibold" color="fg">
-                            Stay Updated
+                            Legal
                         </Text>
-                        <Text fontSize="sm" color="fg.muted">
-                            Subscribe to our newsletter for updates and learning tips.
-                        </Text>
-                        <Box
-                            p={3}
-                            bg="bg.panel"
-                            rounded="md"
-                            borderWidth="1px"
-                            fontSize="sm"
-                            color="fg.muted"
-                            w="full"
-                        >
-                            Coming Soon
-                        </Box>
+                        {footerLinks.legal.map((link, index) => (
+                            <Link key={index} href={link.href}>
+                                <Text
+                                    fontSize="sm"
+                                    color="fg.muted"
+                                    transition="color 0.2s"
+                                    _hover={{ color: "blue.500" }}
+                                >
+                                    {link.label}
+                                </Text>
+                            </Link>
+                        ))}
                     </VStack>
                 </SimpleGrid>
 

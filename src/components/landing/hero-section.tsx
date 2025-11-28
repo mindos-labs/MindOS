@@ -74,7 +74,7 @@ export function HeroSection() {
                         boxShadow="xl"
                     >
                         <iframe
-                            src="https://www.youtube.com/embed/tsmxUTiqJkE?si=xrJKY3fzd8lsdSg4"
+                            src="https://www.youtube-nocookie.com/embed/tsmxUTiqJkE?si=xrJKY3fzd8lsdSg4"
                             title="MindOS Demo Video"
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

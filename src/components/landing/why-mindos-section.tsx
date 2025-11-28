@@ -57,7 +57,7 @@ export function WhyMindosSection() {
                 <VStack gap={16}>
                     <VStack gap={4} textAlign="center">
                         <Heading size="4xl" fontWeight="bold">
-                            Why Mindos?
+                            Why MindOS?
                         </Heading>
                         <Text fontSize="xl" color="fg.muted" maxW="3xl">
                             We're not just another productivity tool. We're your AI-powered learning companion
